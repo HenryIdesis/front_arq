@@ -1,156 +1,80 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import CadastroMotorista from "./pages/CadastroMotorista";
+import CadastroPassageiro from "./pages/CadastroPassageiro";
+import CadastroCorrida from "./pages/CadastroCorrida";
+import CadastroAvaliacao from "./pages/CadastroAvaliacao";
+import CadastroPagamento from "./pages/CadastroPagamento";
+import CadastroHistorico from "./pages/CadastroHistorico";
+import CadastroSplit from "./pages/CadastroSplit";
+import Home from "./pages/Home";
 
 function App() {
-  const [carros, setCarros] = useState([]);
-  const [motoristas, setMotoristas] = useState([]);
-  const [passageiros, setPassageiros] = useState([]);
-  const [corridas, setCorridas] = useState([]);
-  const [avaliacoes, setAvaliacoes] = useState([]);
-  const [pagamentos, setPagamentos] = useState([]);
-  const [historicos, setHistoricos] = useState([]);
-  const [splits, setSplits] = useState([]);
-
-  // estados para cadastro de motorista
-  const [nomeMotorista, setNomeMotorista] = useState("");
-  const [cpfMotorista, setCpfMotorista] = useState("");
-  const [notaMotorista, setNotaMotorista] = useState("");
-
-  useEffect(() => {
-    axios.get("http://localhost:8080/carros").then(res => setCarros(res.data)).catch(console.error);
-    axios.get("http://localhost:8080/motoristas").then(res => setMotoristas(res.data)).catch(console.error);
-    axios.get("http://localhost:8080/passageiros").then(res => setPassageiros(res.data)).catch(console.error);
-    axios.get("http://localhost:8080/corridas").then(res => setCorridas(res.data)).catch(console.error);
-    axios.get("http://localhost:8080/avaliacoes").then(res => setAvaliacoes(res.data)).catch(console.error);
-    axios.get("http://localhost:8080/pagamentos").then(res => setPagamentos(res.data)).catch(console.error);
-    axios.get("http://localhost:8080/historicos").then(res => setHistoricos(res.data)).catch(console.error);
-    axios.get("http://localhost:8080/splits").then(res => setSplits(res.data)).catch(console.error);
-  }, []);
-
-  const cadastrarMotorista = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:8080/motoristas", {
-        nome: nomeMotorista,
-        cpf: cpfMotorista,
-        nota: parseFloat(notaMotorista),
-      });
-      alert("Motorista cadastrado com sucesso!");
-      const res = await axios.get("http://localhost:8080/motoristas");
-      setMotoristas(res.data);
-      setNomeMotorista("");
-      setCpfMotorista("");
-      setNotaMotorista("");
-    } catch (error) {
-      console.error("Erro ao cadastrar motorista:", error);
-      alert("Erro ao cadastrar motorista.");
-    }
-  };
-
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-      <h2>Carros</h2>
-      <ul>
-        {carros.map((c, i) => (
-          <li key={i}>
-            <strong>{c.modelo}</strong> - {c.placa} - {c.cor} - {c.ano}
-          </li>
-        ))}
-      </ul>
+    <Router>
+      <div style={styles.appContainer}>
+        <header style={styles.header}>
+          <h1 style={styles.title}>Sistema de Transporte</h1>
+          <nav style={styles.nav}>
+            <Link to="/motoristas/cadastrar" style={styles.link}>Cadastrar Motorista</Link>
+            <Link to="/passageiros/cadastrar" style={styles.link}>Cadastrar Passageiro</Link>
+            <Link to="/corridas/cadastrar" style={styles.link}>Cadastrar Corrida</Link>
+            <Link to="/avaliacoes/cadastrar" style={styles.link}>Cadastrar Avaliação</Link>
+            <Link to="/pagamentos/cadastrar" style={styles.link}>Cadastrar Pagamento</Link>
+            <Link to="/historicos/cadastrar" style={styles.link}>Cadastrar Histórico</Link>
+            <Link to="/splits/cadastrar" style={styles.link}>Cadastrar Split</Link>
+          </nav>
+        </header>
 
-      <h2>Cadastrar Motorista</h2>
-      <form onSubmit={cadastrarMotorista} style={{ marginBottom: "1rem" }}>
-        <input
-          type="text"
-          placeholder="Nome"
-          value={nomeMotorista}
-          onChange={(e) => setNomeMotorista(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="CPF"
-          value={cpfMotorista}
-          onChange={(e) => setCpfMotorista(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Nota"
-          min="0"
-          max="5"
-          step="0.1"
-          value={notaMotorista}
-          onChange={(e) => setNotaMotorista(e.target.value)}
-          required
-        />
-        <button type="submit">Cadastrar</button>
-      </form>
-
-      <h2>Motoristas</h2>
-      <ul>
-        {motoristas.map((m, i) => (
-          <li key={i}>
-            <strong>{m.nome}</strong> - CPF: {m.cpf} - Nota: {m.nota}
-          </li>
-        ))}
-      </ul>
-
-      <h2>Passageiros</h2>
-      <ul>
-        {passageiros.map((p, i) => (
-          <li key={i}>
-            <strong>{p.nome}</strong> - Email: {p.email} - Telefone: {p.telefone}
-          </li>
-        ))}
-      </ul>
-
-      <h2>Corridas</h2>
-      <ul>
-        {corridas.map((c, i) => (
-          <li key={i}>
-            ID: {c.id} - Origem: {c.origem} - Destino: {c.destino} - Valor: R${c.valor}
-          </li>
-        ))}
-      </ul>
-
-      <h2>Avaliações</h2>
-      <ul>
-        {avaliacoes.map((a, i) => (
-          <li key={i}>
-            Passageiro: {JSON.stringify(a.passageiro)} - Nota: {a.nota} - Comentário: {a.comentario}
-          </li>
-        ))}
-      </ul>
-
-      <h2>Pagamentos</h2>
-      <ul>
-        {pagamentos.map((p, i) => (
-          <li key={i}>
-            Corrida: {p.corridaId} - Valor: R${p.valor} - Forma: {p.formaPagamento}
-          </li>
-        ))}
-      </ul>
-
-      <h2>Histórico</h2>
-      <ul>
-        {historicos.map((h, i) => (
-          <li key={i}>
-            Corrida: {h.corridaId} - Status: {h.status} - Data: {h.data}
-          </li>
-        ))}
-      </ul>
-
-      <h2>Split</h2>
-      <ul>
-        {splits.map((s, i) => (
-          <li key={i}>
-            Valor: R${s.valor} - Motorista: {JSON.stringify(s.motorista)}
-          </li>
-        ))}
-      </ul>
-    </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/motoristas/cadastrar" element={<CadastroMotorista />} />
+          <Route path="/passageiros/cadastrar" element={<CadastroPassageiro />} />
+          <Route path="/corridas/cadastrar" element={<CadastroCorrida />} />
+          <Route path="/avaliacoes/cadastrar" element={<CadastroAvaliacao />} />
+          <Route path="/pagamentos/cadastrar" element={<CadastroPagamento />} />
+          <Route path="/historicos/cadastrar" element={<CadastroHistorico />} />
+          <Route path="/splits/cadastrar" element={<CadastroSplit />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
+
+const styles = {
+  appContainer: {
+    minHeight: "100vh",
+    backgroundColor: "#f1f5f9",
+    fontFamily: "Arial, sans-serif",
+    padding: "2rem",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  header: {
+    marginBottom: "2rem",
+    textAlign: "center",
+  },
+  title: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    color: "#1e40af",
+  },
+  nav: {
+    marginTop: "1rem",
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "1rem",
+    justifyContent: "center",
+  },
+  link: {
+    color: "#2563eb",
+    textDecoration: "none",
+    fontWeight: "bold",
+    padding: "0.5rem 1rem",
+    backgroundColor: "#e0e7ff",
+    borderRadius: "6px",
+    transition: "background-color 0.2s",
+  },
+};
 
 export default App;
